@@ -1,0 +1,21 @@
+---
+- name: Perform weekly system reboot
+  hosts: all  # Target all hosts, adjust as per your inventory
+ 
+  tasks:
+    - name: Reboot the system
+      reboot:
+        reboot_timeout: 300  # Timeout in seconds, adjust as needed
+      async: 1
+      poll: 0
+ 
+    - name: Wait for system to reboot
+      wait_for_connection:
+        timeout: 300  # Adjust timeout as per your system's reboot time
+ 
+    - name: Check if system came back online
+      ping:
+      register: pong
+      until: pong
+      retries: 30
+      delay: 10
